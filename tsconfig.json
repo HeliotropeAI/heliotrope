@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "strictBindCallApply": false,
+    "strictPropertyInitialization": false,
+    "noImplicitThis": false,
+    "alwaysStrict": false,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": false,
+    "jsx": "preserve",
+    "incremental": true,
+    "allowImportingTsExtensions": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": false,
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
+    "noImplicitReturns": false,
+    "noUncheckedIndexedAccess": false,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["jest", "node"]
+  },
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "postcss.config.js", "src/types/**/*"],
+  "exclude": ["node_modules"]
+}
