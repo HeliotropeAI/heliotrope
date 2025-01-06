@@ -1,29 +1,62 @@
-import Game from './components/Game.tsx';
-
+import { useState } from 'react';
+import ReactModal from 'react-modal';
 import twitterImg from '../assets/close.svg';
 import enterImg from '../assets/Enter.svg';
 import githubImg from '../assets/github.svg';
-// import { UserButton } from '@clerk/clerk-react';
-// import { Authenticated, Unauthenticated } from 'convex/react';
-// import LoginButton from './components/buttons/LoginButton.tsx';
-import { useState } from 'react';
-import ReactModal from 'react-modal';
-import MusicButton from './components/buttons/MusicButton.tsx';
-import Button from './components/buttons/Button.tsx';
-import InteractButton from './components/buttons/InteractButton.tsx';
-// import FreezeButton from './components/FreezeButton.tsx';
+import { CHARACTERS } from './constants/characters';
 import { MAX_HUMAN_PLAYERS } from '../convex/constants.ts';
-import PoweredByConvex from './components/PoweredByConvex.tsx';
-import NavMenu from './navmenu.jsx';
-import MessageDisplay from './components/TownStatusMessageDisplay.tsx';
+import Button from './components/buttons/Button.tsx';
 import WarningModal from './components/WarningModal.tsx';
 
-import { TwitchEmbed } from 'react-twitch-embed';
 export default function Home() {
   const [helpModalOpen, setHelpModalOpen] = useState(false);
+
+  const renderCharacterCard = (character, isReversed = false) => {
+    const ContentSection = (
+      <div className="lg:w-[600px]">
+        <div className="max-w-xs md:max-w-xl lg:max-w-none my-4 lg:text-left text-center text-base sm:text-xl md:text-lg text-white leading-tight shadow-solid">
+          {character.description}
+        </div>
+      </div>
+    );
+
+    const ImageSection = (
+      <div className="mx-auto lg:w-[300px] max-w game-frame items-center bg-[#2D353A] rounded-[32px] my-4">
+        <div className="flex flex-row items-center">
+          <div className="flex flex-col items-center w-full">
+            <img 
+              src={character.imageUrl} 
+              alt={`${character.name} character avatar`} 
+              className="w-[140px] p-4"
+              loading="lazy"
+            />
+            <h3 className="text-4xl sm:text-8xl lg:text-5xl font-bold font-display leading-none tracking-wide game-title text-left">
+              {character.name}
+            </h3>
+          </div>
+        </div>
+      </div>
+    );
+
+    return (
+      <div key={character.id} className="lg:flex lg:w-[900px] sm:w-full items-center">
+        {isReversed ? (
+          <>
+            {ContentSection}
+            {ImageSection}
+          </>
+        ) : (
+          <>
+            {ImageSection}
+            {ContentSection}
+          </>
+        )}
+      </div>
+    );
+  };
+
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-between font-body game-background">
-      {/* <PoweredByConvex /> */}
       <WarningModal />
       <ReactModal
         isOpen={helpModalOpen}
@@ -107,180 +140,13 @@ export default function Home() {
         </div>
 
         <div className="flex flex-col items-center">
-          <h2 className="mx-auto text-4xl p-3 sm:text-8xl lg:text-9xl font-bold font-display leading-none tracking-wide game-title w-full text-center sm:text-center sm:w-auto">
+          <h2 className="mx-auto text-4xl p-3 sm:text-8xl lg:text-9xl font-bold font-display leading-none tracking-wide game-title w-full text-center">
             Characters
-          </h2>          
-          <div className="lg:flex lg:w-[900px] sm:w-full items-center">
-            <div className="lg:w-[600px]">
-              <div className="max-w-xs  md:max-w-xl lg:max-w-none my-4 lg:text-left text-center text-base sm:text-xl md:text-lg text-white leading-tight shadow-solid">
-                Ledger is the mastermind behind the operation, orchestrating every move with
-                surgical precision. After analyzing countless rug-pulls and pump schemes, she
-                devises a foolproof plan to launch their token on Pump.Fun. Ledger’s
-                goal is to manipulate the volatile platform while keeping the team’s strategy
-                airtight. Her calm demeanor and analytical mind make her the ultimate tactician.{' '}
-                <br />
-              </div>
-            </div>
-            <div className="mx-auto lg:w-[300px] max-w game-frame items-center bg-[#2D353A] rounded-[32px] my-4">
-              <div className="flex flex-row items-center ">
-                <div className="flex flex-col items-center w-full ">
-                  <img src="/assets/F/F1.gif" className="w-[140px] p-4" />
-                  <h3 className=" text-4xl  sm:text-8xl lg:text-5xl font-bold font-display leading-none tracking-wide game-title text-left">
-                    Ledger
-                  </h3>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="lg:flex lg:w-[900px] sm:w-full items-center">
-            <div className="mx-auto lg:w-[300px] max-w game-frame items-center bg-[#2D353A] rounded-[32px] my-4">
-              <div className="flex flex-row items-center">
-                <div className="flex flex-col items-center w-full">
-                  <img src="/assets/F/F2.gif" className="w-[140px] p-4" />
-                  <h3 className=" text-4xl  sm:text-8xl lg:text-5xl font-bold font-display leading-none tracking-wide game-title text-left">
-                  Flash
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div className="lg:w-[600px]">
-              <div className="max-w-xs  md:max-w-xl lg:max-w-none my-4 lg:text-left p-0 lg:pl-8 text-center text-base sm:text-xl md:text-lg text-white leading-tight shadow-solid">
-              Flash is the team’s hype machine and marketing genius. With his connections to crypto influencers and meme lords, he ensures the token trends across all platforms within hours. Flash’s knack for generating FOMO is unmatched, but his impulsive nature often causes friction. His motto: "The louder the shill, the bigger the bag."
-              </div>
-            </div>
-          </div>
-
-
-          <div className="lg:flex lg:w-[900px] sm:w-full items-center">
-          <div className="lg:w-[600px]">
-              <div className="max-w-xs  md:max-w-xl lg:max-w-none my-4 lg:text-left text-center text-base sm:text-xl md:text-lg text-white leading-tight shadow-solid">
-                Vault is the team’s financial strategist, ensuring the tokenomics and liquidity
-                pools are bulletproof. She designs the token to incentivize long-term holding while
-                preventing whales from dumping. Her ironclad spreadsheets and conservative approach
-                provide stability amidst the chaos of Pump.Fun’s ecosystem.{' '}
-              </div>
-            </div>
-            <div className="mx-auto lg:w-[300px] max-w game-frame items-center bg-[#2D353A] rounded-[32px] my-4">
-              <div className="flex flex-row items-center">
-                <div className="flex flex-col items-center w-full">
-                  <img src="/assets/F/F3.gif" className="w-[140px] p-4" />
-                  <h3 className=" text-4xl  sm:text-8xl lg:text-5xl font-bold font-display leading-none tracking-wide game-title text-left">
-                    Vault
-                  </h3>
-                </div>
-              </div>
-            </div>
-            
-          </div>
-
-          <div className="lg:flex lg:w-[900px] sm:w-full items-center">
-            <div className="mx-auto lg:w-[300px] max-w game-frame items-center bg-[#2D353A] rounded-[32px] my-4">
-              <div className="flex flex-row items-center">
-                <div className="flex flex-col items-center w-full">
-                  <img src="/assets/F/F4.gif" className="w-[140px] p-4" />
-                  <h3 className=" text-4xl  sm:text-8xl lg:text-5xl font-bold font-display leading-none tracking-wide game-title text-left">
-                    Echo
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div className="lg:w-[600px]">
-              <div className="max-w-xs  md:max-w-xl lg:max-w-none my-4 lg:text-left p-0 lg:pl-8 text-center text-base sm:text-xl md:text-lg text-white leading-tight shadow-solid">
-                Echo is the teams market sentiment analyst, monitoring on-chain data and social
-                platforms to predict how the launch will play out. Her ability to decode whale
-                wallets and spot coordinated pumps makes her indispensable. Armed with her signature
-                tool, “Whale Radar,” she ensures the team stays ahead of the game.{' '}
-              </div>
-            </div>
-          </div>
-
-
-
-          <div className="lg:flex lg:w-[900px] sm:w-full items-center">
-          <div className="lg:w-[600px]">
-              <div className="max-w-xs  md:max-w-xl lg:max-w-none my-4 lg:text-left text-center text-base sm:text-xl md:text-lg text-white leading-tight shadow-solid">
-              Forge is the team’s developer and DeFi architect, crafting the token's smart contracts with unbreakable security. Tasked with creating an innovative staking system, Forge ensures the token not only pumps but also offers legitimate utility. His motto: "If they can’t sell it, they’ll stake it."
-              </div>
-            </div>
-            <div className="mx-auto lg:w-[300px] max-w game-frame items-center bg-[#2D353A] rounded-[32px] my-4">
-              <div className="flex flex-row items-center">
-                <div className="flex flex-col items-center w-full">
-                  <img src="/assets/F/F5.gif" className="w-[140px] p-4" />
-                  <h3 className=" text-4xl  sm:text-8xl lg:text-5xl font-bold font-display leading-none tracking-wide game-title text-left">
-                  Forge
-                  </h3>
-                </div>
-              </div>
-            </div>
-           
-          </div>
-
-
-          <div className="lg:flex lg:w-[900px] sm:w-full items-center">
-          <div className="mx-auto lg:w-[300px] max-w game-frame items-center bg-[#2D353A] rounded-[32px] my-4">
-              <div className="flex flex-row items-center">
-                <div className="flex flex-col items-center w-full">
-                  <img src="/assets/F/F6.gif" className="w-[140px] p-4" />
-                  <h3 className=" text-4xl  sm:text-8xl lg:text-4xl font-bold font-display leading-none tracking-wide game-title text-left">
-                    Rektify
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div className="lg:w-[600px]">
-              <div className="max-w-xs  md:max-w-xl lg:max-w-none my-4 lg:text-left p-0 lg:pl-8 text-center text-base sm:text-xl md:text-lg text-white leading-tight shadow-solid">
-                Rektify is the team’s risk manager and the voice of hard-earned wisdom. Having been
-                burned on Pump.Fun before, he constantly warns the team about over-leverage and FOMO
-                traps. While often skeptical of Flash’s hype, he grudgingly admits that Ledger’s
-                plan might work this time.{' '}
-              </div>
-            </div>
-            
-          </div>
-
+          </h2>
           
-          <div className="lg:flex lg:w-[900px] sm:w-full items-center">
-            <div className="lg:w-[600px]">
-              <div className="max-w-xs  md:max-w-xl lg:max-w-none my-4 lg:text-left text-center text-base sm:text-xl md:text-lg text-white leading-tight shadow-solid">
-                Risky is the wildcard, advocating for bold moves that could either make or break the
-                launch. She suggests allocating a portion of the presale funds to farm Pump.Fun’s
-                native token and create additional FOMO. With her catchphrase, "Fortune favors the
-                degens," she keeps the team’s energy high but on edge.{' '}
-              </div>
-            </div>
-            <div className="mx-auto lg:w-[300px] max-w game-frame items-center bg-[#2D353A] rounded-[32px] my-4">
-              <div className="flex flex-row items-center">
-                <div className="flex flex-col items-center w-full">
-                  <img src="/assets/F/F7.gif" className="w-[140px] p-4" />
-                  <h3 className=" text-4xl  sm:text-8xl lg:text-5xl font-bold font-display leading-none tracking-wide game-title text-left">
-                    Risky
-                  </h3>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-          <div className="lg:flex lg:w-[900px] sm:w-full items-center">
-            <div className="mx-auto lg:w-[300px] max-w game-frame items-center bg-[#2D353A] rounded-[32px] my-4">
-              <div className="flex flex-row items-center">
-                <div className="flex flex-col items-center w-full">
-                  <img src="/assets/F/F8.gif" className="w-[140px] p-4" />
-                  <h3 className=" text-4xl  sm:text-8xl lg:text-5xl font-bold font-display leading-none tracking-wide game-title text-left">
-                  Oracle
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div className="lg:w-[600px]">
-              <div className="max-w-xs  md:max-w-xl lg:max-w-none my-4 lg:text-left p-0 lg:pl-8 text-center text-base sm:text-xl md:text-lg text-white leading-tight shadow-solid">
-              Oracle is the teams long-term strategist, ensuring the token isn’t just a flash in the pan. She maps out post-launch plans, including CEX listings and partnerships, to keep the token relevant after the initial pump. Her foresight ensures the token survives the inevitable dump phase.
-              </div>
-            </div>
-          </div>
-
-
+          {CHARACTERS.map((character, index) => 
+            renderCharacterCard(character, index % 2 === 0)
+          )}
         </div>
       </div>
     </main>
