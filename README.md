@@ -2,6 +2,8 @@
 
 Heliotrope is a virtual crypto trading simulation where AI characters live, interact, and strategize about launching a token. This immersive multi-agent environment creates a unique blend of entertainment and crypto trading strategy simulation.
 
+CA: Hx7SabPkohWopJ5QwKWXe6GBGumsTdrEsCVgEAr9pump
+
 <div align="center">
 <img src="/public/assets/preview.png" alt="Heliotrope Preview" width="800px"/>
 
