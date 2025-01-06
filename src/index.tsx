@@ -82,7 +82,7 @@ export default function Home() {
                 <Button imgUrl={twitterImg} href="#">
                   Twitter
                 </Button>
-                <Button imgUrl={githubImg} href="https://github.com/heliotrope">
+                <Button imgUrl={githubImg} href="https://github.com/https://github.com/HeliotropeAI/heliotrope">
                   GitHub
                 </Button>
                 <Button 
