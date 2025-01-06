@@ -1,15 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useQuery } from 'convex/react';
+import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
-import { useMutation } from 'convex/react';
+import { LOG_LEVELS } from '../types/messages';
+
+const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+const MAX_RETRIES = 3;
 
 export default function MessageDisplay() {
   const logs = useQuery(api.logs.getAllLogs) || [];
   const createStatus = useMutation(api.logs.createStatus);
-  const createStatu = useMutation(api.logs.deleteStatus);
- 
-
-  // Move useRef outside of useEffect
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const systemPrompt = `You are an AI story generator for a virtual town. No matter what input text you receive, your task is to create an engaging status update about the town and its AI inhabitants.
@@ -42,25 +41,19 @@ export default function MessageDisplay() {
   
   Remember: Take ANY input and transform it into a living moment from this AI-inhabited town.`;
 
-  const analyzeWithGPT = async (text: string) => {
+  const analyzeWithGPT = async (text: string, retryCount = 0) => {
     try {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer `, // Recommended: use environment variable
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
         },
         body: JSON.stringify({
-          model: 'gpt-4o',
+          model: 'gpt-4',
           messages: [
-            {
-              role: 'system',
-              content: systemPrompt,
-            },
-            {
-              role: 'user',
-              content: `Generate a town status update based on this input: ${text}`,
-            },
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: `Generate a town status update based on this input: ${text}` },
           ],
           temperature: 0.7,
           max_tokens: 500,
@@ -68,40 +61,42 @@ export default function MessageDisplay() {
       });
 
       if (!response.ok) {
-        throw new Error('GPT request failed');
+        throw new Error(`GPT request failed: ${response.statusText}`);
       }
 
       const data = await response.json();
       const result = data.choices[0].message.content;
-
       await createStatus({ status: result });
+      
     } catch (error) {
       console.error('Error:', error);
+      if (retryCount < MAX_RETRIES) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+        return analyzeWithGPT(text, retryCount + 1);
+      }
     }
   };
 
-  const runAnalysis = () => {
-    if (logs.length > 0) {
-      // const logsText = logs.map((log) => `[${log.timestamp}] ${log.content}`).join('\n');
-      // analyzeWithGPT(logsText);
-    }
-  };
- 
   useEffect(() => {
-    const runAnalysisAndCreateStatus = () => {
-      runAnalysis();
-      createStatu();
+    const runAnalysis = () => {
+      if (logs.length > 0) {
+        const recentLogs = logs.slice(0, 10)
+          .map(log => `[${new Date(log.timestamp).toISOString()}] ${log.content}`)
+          .join('\n');
+        analyzeWithGPT(recentLogs);
+      }
     };
-  
-    runAnalysisAndCreateStatus();
-    timerRef.current = setInterval(runAnalysisAndCreateStatus, 5 * 60 * 1000);
-  
+
+    runAnalysis();
+    timerRef.current = setInterval(runAnalysis, REFRESH_INTERVAL);
+
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
     };
-  }, [logs.length, createStatus, createStatu]); // Added dependencies
+  }, [logs.length]);
+
   const statuses = useQuery(api.logs.getAllStatus) || [];
 
   return (
@@ -110,13 +105,15 @@ export default function MessageDisplay() {
         Message Console
       </div>
       <div className="terminal-content p-4">
-        
-        {statuses.map((status, index) => (
+        {statuses.map((status) => (
           <div 
-            // key={status._id || index}
+            key={status.id}
             className="message-line mb-2"
           >
-            {/* <span className="ml-2">{status.status}</span> */}
+            <span className="text-xs opacity-50">
+              {new Date(status.timestamp).toLocaleTimeString()}
+            </span>
+            <span className="ml-2">{status.status}</span>
           </div>
         ))}
       </div>
